@@ -1,0 +1,63 @@
+JAL 0x0021001
+LUI $v1 0x0010
+SW $v1 0x0000 $v0
+SRL $a0 $v1 0x0undefined
+SRA $a0 $a0 0x1undefined
+SH $a0 0x0004 $v0
+ADDI $v0 $v0 0x0008
+ORI $a0 $a0 0x0001
+ANDI $a0 $a0 0x0001
+SB $a0 0x0000 $v0
+ADDI $v1 $v0 0x0000
+LB $a1 0x0000 $v1
+SLL $a1 $a1 0x0undefined
+SUB $a2 $v0 $a1
+LW $a3 0x0000 $a2
+LH $t0 0x0004 $a2
+XORI $t1 $a0 0x0005
+OR $a3 $a3 $a0
+DIVU $a3 $t1
+MFHI $v0
+MFLO $v1
+ADDIU $v0 $v0 0x7FFE
+MULTU $v0 $v1 (stall?)
+MTHI $t1
+SLT $t2 $t1 $a3
+SLTI $t3 $t1 0x0005
+BEQ $t2 $t3 0x000C
+ADDIU $t5 $zero 0x000A
+BLEZ $t6 0x000C (issue)
+ADDIU $t7 $zero 0x000A
+BGEZ $a1 0x000D
+ADDIU $s1 $zero 0x000A
+J 0x010002D
+ADDIU $s3 $zero 0x000A
+ADDIU $fp $ra 0xFFD4
+JR $ra
+ADDIU $s5 $zero 0x000A
+J 0x0100031
+ADDIU $t4 $zero 0x000A
+BNE $t4 $zero 0xFFF4
+ADDIU $t6 $zero 0x000A
+SUB $a0 $a0 $a1
+BLTZ $a0 0xFFF3
+ADDIU $s0 $zero 0x000A
+BGTZ $v0 0xFFF3
+ADDIU $s2 $zero 0x000A
+JAL 0x0100021
+ADDIU $s4 $zero 0x000A
+JALR $ra $fp
+NOR $s6 $a3 $zero
+ANDI $s6 $s6 0x7FFF
+XOR $s7 $s6 $t2
+MFLO $t8
+MTLO $s7
+BEQ $s7 $t8 0x0006
+ADDIU $t9 $zero 0x000A
+BNE $t4 $t5 0x0003
+ADDIU $k0 $zero 0x000A
+BEQ $s7 $s7 0x0003
+ADDIU $k1 $zero 0x000A
+ADDIU $gp $zero 0x000A
+ADDIU $v0 $zero 0x000A
+SYSCALL
