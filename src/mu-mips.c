@@ -403,7 +403,10 @@ void MEM()
     CacheBlock* currentBlock;
     currentBlock = &L1Cache.blocks[blockIndex];
     printf("\nAfter block set");
-    if((currentBlock->tag == currentTag) && (currentBlock->valid == 1)){
+    printf("\ncurrentBlock.tag : %d ", (*currentBlock).tag);
+    printf("\ncurrentBlock.valid: %d", (*currentBlock).valid);
+    printf("\ncurrentTag: %d", currentTag);
+    if(((*currentBlock).tag == currentTag) && ((*currentBlock).valid == 1)){
       printf("\nCACHE Hit!");
       //cache hit, so load/store from cache
       cache_hits++;
@@ -420,6 +423,7 @@ void MEM()
       
     } else {
       printf("\nCACHE Miss!");
+      fflush(stdout);
       //cache miss, start stalling
       cacheStalling++;
       cache_misses++;
