@@ -336,6 +336,11 @@ void handle_pipeline()
 /************************************************************/
 void WB()
 {
+  //if cache is stalling, skip
+  if(cacheStalling != 0){
+    return;
+  }
+  
 	uint32_t rd, rt, rs;
 	rd = MEM_WB.IR & 0xF800;
 	rd >>= 11; 
@@ -380,10 +385,6 @@ void WB()
 /************************************************************/
 void MEM()
 {
-  
-  if(!(EX_MEM.memory_reference_load || EX_MEM.memory_reference_store)){
-    return;
-  }
   uint32_t currentTag = MEM_WB.ALUOutput & 0xFFFFF000;
   uint32_t byteOffset = MEM_WB.ALUOutput & 0x3;
   uint32_t wordOffset = MEM_WB.ALUOutput & 0xC;
@@ -393,6 +394,12 @@ void MEM()
     //not stalling
     MEM_WB = EX_MEM;
 	  memset(&EX_MEM, 0, sizeof(EX_MEM)); //Clear EX_MEM
+    //skip if no memory load/store
+    if(!(MEM_WB.memory_reference_load || MEM_WB.memory_reference_store)){
+      return;
+    }
+    
+    
     uint32_t currentTag = MEM_WB.ALUOutput & 0xFFFFF000;
     uint32_t byteOffset = MEM_WB.ALUOutput & 0x3;
     uint32_t wordOffset = MEM_WB.ALUOutput & 0xC;
@@ -431,13 +438,18 @@ void MEM()
     
   } else {
     //cache stalling
+    
+    printf("\nCache Stalling!");
+    fflush(stdout);
     if(cacheStalling == 100){
       //end of cache stalling
       printf("\nEnd of stalling! memLoad: %d   memStore: %d", MEM_WB.memory_reference_load, MEM_WB.memory_reference_store);
+      fflush(stdout);
       cacheStalling = 0;
       stalling = 0;
       if(MEM_WB.memory_reference_load){
         printf("\nCACHE Memory Load");
+        fflush(stdout);
         //read all words in block and place each into cache
         L1Cache.blocks[blockIndex].words[0] = mem_read_32(blockAddress);
         L1Cache.blocks[blockIndex].words[1] = mem_read_32(blockAddress+0x4);
@@ -450,6 +462,7 @@ void MEM()
 
       } else if(MEM_WB.memory_reference_store){
          printf("\nCACHE Memory Store");
+        fflush(stdout);
          //read all words in block and place each into cache
         L1Cache.blocks[blockIndex].words[0] = mem_read_32(blockAddress);
         L1Cache.blocks[blockIndex].words[1] = mem_read_32(blockAddress+0x4);
