@@ -336,14 +336,11 @@ void handle_pipeline()
 /************************************************************/
 void WB()
 {
-<<<<<<< HEAD
   //if cache is stalling, skip
   if(cacheStalling != 0){
     return;
   }
   
-=======
->>>>>>> 1989926dab189e91f96806526fe97ab76a612ede
 	uint32_t rd, rt, rs;
 	rd = MEM_WB.IR & 0xF800;
 	rd >>= 11; 
@@ -353,15 +350,9 @@ void WB()
 	rs >>= 21;
 	
 	if(MEM_WB.memory_reference_load){
-<<<<<<< HEAD
     printf("WB_MEMWB DEST: %x    MEMWB LMD: %x",MEM_WB.destination, MEM_WB.LMD);
 		NEXT_STATE.REGS[MEM_WB.destination] = MEM_WB.LMD;
     printf("WB_NEXT STATE REG VALUE: %x", NEXT_STATE.REGS[MEM_WB.destination]);
-=======
-    printf("MEMWB DEST: %x    MEMWB LMD: %x",MEM_WB.destination, MEM_WB.LMD);
-		NEXT_STATE.REGS[MEM_WB.destination] = MEM_WB.LMD;
-    printf("NEXT STATE REG VALUE: %x", NEXT_STATE.REGS[MEM_WB.destination]);
->>>>>>> 1989926dab189e91f96806526fe97ab76a612ede
 	}
 	if(MEM_WB.register_register){
 		NEXT_STATE.REGS[MEM_WB.destination] = MEM_WB.ALUOutput;
@@ -394,18 +385,11 @@ void WB()
 /************************************************************/
 void MEM()
 {
-<<<<<<< HEAD
-=======
-	MEM_WB = EX_MEM;  
-	memset(&EX_MEM, 0, sizeof(EX_MEM)); //Clear EX_MEM
-  
->>>>>>> 1989926dab189e91f96806526fe97ab76a612ede
   uint32_t currentTag = MEM_WB.ALUOutput & 0xFFFFF000;
   uint32_t byteOffset = MEM_WB.ALUOutput & 0x3;
   uint32_t wordOffset = MEM_WB.ALUOutput & 0xC;
   uint32_t blockIndex = MEM_WB.ALUOutput & 0xF0;
   uint32_t blockAddress = MEM_WB.ALUOutput & 0xFFFFFFFC;
-<<<<<<< HEAD
   if(cacheStalling==0){
     //not stalling
     MEM_WB = EX_MEM;
@@ -439,32 +423,14 @@ void MEM()
       printf("\nCACHE_MEMWB LMD: %x", MEM_WB.LMD);
       } else if(MEM_WB.memory_reference_store){
         printf("\nCACHE Memory Store");
-=======
-  
-  if(cacheStalling==0){
-    //not stalling
-    
-    CacheBlock* currentBlock;
-    currentBlock = &L1Cache.blocks[blockIndex];
-    if((currentBlock->tag == currentTag) && (currentBlock->valid == 1)){
-      //cache hit, so load/store from cache
-      cache_hits++;
-      if(MEM_WB.memory_reference_load){
-       MEM_WB.LMD = currentBlock->words[wordOffset];
-      printf("\nMEMWB LMD: %x", MEM_WB.LMD);
-      } else if(MEM_WB.memory_reference_store){
->>>>>>> 1989926dab189e91f96806526fe97ab76a612ede
         currentBlock->words[wordOffset] = MEM_WB.B; //update cache
         writeBuffer = *currentBlock; //put cache block into write buffer
         writeBufferToMemory(blockAddress); //write write buffer to memory
       }
       
     } else {
-<<<<<<< HEAD
       printf("\nCACHE Miss!");
       fflush(stdout);
-=======
->>>>>>> 1989926dab189e91f96806526fe97ab76a612ede
       //cache miss, start stalling
       cacheStalling++;
       cache_misses++;
@@ -472,7 +438,6 @@ void MEM()
     
   } else {
     //cache stalling
-<<<<<<< HEAD
     
     printf("\nCache Stalling!");
     fflush(stdout);
@@ -485,12 +450,6 @@ void MEM()
       if(MEM_WB.memory_reference_load){
         printf("\nCACHE Memory Load");
         fflush(stdout);
-=======
-    if(cacheStalling == 100){
-      //end of cache stalling
-      cacheStalling = 0;
-      if(MEM_WB.memory_reference_load){
->>>>>>> 1989926dab189e91f96806526fe97ab76a612ede
         //read all words in block and place each into cache
         L1Cache.blocks[blockIndex].words[0] = mem_read_32(blockAddress);
         L1Cache.blocks[blockIndex].words[1] = mem_read_32(blockAddress+0x4);
@@ -499,17 +458,11 @@ void MEM()
         L1Cache.blocks[blockIndex].valid = 1; //block is now valid
         
         MEM_WB.LMD = L1Cache.blocks[blockIndex].words[wordOffset]; //return word to CPU
-<<<<<<< HEAD
         printf("\nCACHE_MEMWB LMD: %x", MEM_WB.LMD);
 
       } else if(MEM_WB.memory_reference_store){
          printf("\nCACHE Memory Store");
         fflush(stdout);
-=======
-        printf("\nMEMWB LMD: %x", MEM_WB.LMD);
-
-      } else if(MEM_WB.memory_reference_store){
->>>>>>> 1989926dab189e91f96806526fe97ab76a612ede
          //read all words in block and place each into cache
         L1Cache.blocks[blockIndex].words[0] = mem_read_32(blockAddress);
         L1Cache.blocks[blockIndex].words[1] = mem_read_32(blockAddress+0x4);
@@ -554,23 +507,12 @@ void EX()
 	if(EX_MEM.opcode == 0x00 && EX_MEM.IR != 0x00){
 		switch(EX_MEM.function){
 				case 0x00:{ //SLL
-<<<<<<< HEAD
 					uint32_t sa = EX_MEM.imm & 0x07C0;
 					sa = sa >> 6;
 					EX_MEM.ALUOutput = EX_MEM.B << sa;
 
 					EX_MEM.destination = EX_MEM.registerRd;
 					
-=======
-					printf("\nSLL");
-					uint32_t sa = EX_MEM.imm & 0x07C0;
-					sa = sa >> 6;
-					EX_MEM.ALUOutput = EX_MEM.B << sa;
-					printf("\nALU: %x", EX_MEM.ALUOutput);
-					EX_MEM.destination = EX_MEM.registerRd;
-					
-					printf("\nDEST: %x", EX_MEM.destination);
->>>>>>> 1989926dab189e91f96806526fe97ab76a612ede
 					EX_MEM.register_register = 1;
 					break;
 				}
@@ -772,13 +714,7 @@ void EX()
 				EX_MEM.register_immediate = 1;
 				break;
 			case 0x09: //ADDIU	instruction = IF_ID.IR ;
-<<<<<<< HEAD
 				EX_MEM.ALUOutput = EX_MEM.A + ( (EX_MEM.imm & 0x8000) > 0 ? (EX_MEM.imm | 0xFFFF0000) : (EX_MEM.imm & 0x0000FFFF));
-=======
-        printf("\nADDIU");
-				EX_MEM.ALUOutput = EX_MEM.A + ( (EX_MEM.imm & 0x8000) > 0 ? (EX_MEM.imm | 0xFFFF0000) : (EX_MEM.imm & 0x0000FFFF));
-				 printf("\nEXMEM A: %x  EXMEM IMM: %x  EXMEM ALU: %x  EXMEM DEST: %x", EX_MEM.A, EX_MEM.imm, EX_MEM.ALUOutput, EX_MEM.destination);
->>>>>>> 1989926dab189e91f96806526fe97ab76a612ede
 				EX_MEM.destination = EX_MEM.registerRt;
 				//printf("\nEX MEM DEST : %x", EX_MEM.destination);
 				EX_MEM.register_immediate = 1;
@@ -849,10 +785,7 @@ void EX()
 			case 0x28: //SB *******LOAD/STORE*********
 			case 0x29: //SH *******LOAD/STORE*********
 			case 0x2B: //SW *******LOAD/STORE*********
-<<<<<<< HEAD
         printf("\nEX_Store Word!");
-=======
->>>>>>> 1989926dab189e91f96806526fe97ab76a612ede
 				EX_MEM.ALUOutput = EX_MEM.A + EX_MEM.imm;
 				EX_MEM.destination = 0;
 				EX_MEM.memory_reference_store = 1;
@@ -923,10 +856,7 @@ void ID()
 	rt = (IF_ID.IR & 0x001F0000) >> 16;
 	immediate = IF_ID.IR & 0x0000FFFF;
 	rd = (IF_ID.IR & 0xF800) >> 11;
-<<<<<<< HEAD
   
-=======
->>>>>>> 1989926dab189e91f96806526fe97ab76a612ede
 	
 
 	//printf("regWrite: %d, destination: %d, forwarding: %d\n", EX_MEM.RegWrite, EX_MEM.destination, ENABLE_FORWARDING);
@@ -1011,14 +941,11 @@ void ID()
 				break;
 		}
 	}
-<<<<<<< HEAD
   
   if(cacheStalling != 0){
     stalling = 1;
   }
   
-=======
->>>>>>> 1989926dab189e91f96806526fe97ab76a612ede
 	if(!stalling){
 		ID_EX = IF_ID;
 		memset(&IF_ID, 0, sizeof(IF_ID)); //Clear IF_ID
@@ -1285,10 +1212,7 @@ void show_pipeline(){
 	printf("\nIF_ID.IR: %x", IF_ID.IR);
 	printf("\nIF_ID.PC: %x", IF_ID.PC);
 	printf("\nstalling: %d\n", stalling);
-<<<<<<< HEAD
   printf("\nCache Stalling: %d", cacheStalling);
-=======
->>>>>>> 1989926dab189e91f96806526fe97ab76a612ede
 	
 	printf("\nID_EX.IR: %x", ID_EX.IR);
 	printf("\nID_EX.A: %x", ID_EX.A);
@@ -1297,20 +1221,14 @@ void show_pipeline(){
 	printf("\nID_EX.opcode: %x", ID_EX.opcode);
 	printf("\nID_EX.function: %x", ID_EX.function);
 	printf("\nstalling: %d\n", stalling);
-<<<<<<< HEAD
   printf("\nCache Stalling: %d", cacheStalling);
-=======
->>>>>>> 1989926dab189e91f96806526fe97ab76a612ede
 	
 	printf("\nEX_MEM.IR: %x", EX_MEM.IR);
 	printf("\nEX_MEM.A: %x", EX_MEM.A);
 	printf("\nEX_MEM.B: %x", EX_MEM.B);
 	printf("\nEX_MEM.ALUOutput: %x", EX_MEM.ALUOutput);
 	printf("\nstalling: %d\n", stalling);
-<<<<<<< HEAD
   printf("\nCache Stalling: %d", cacheStalling);
-=======
->>>>>>> 1989926dab189e91f96806526fe97ab76a612ede
 	
 	printf("\nMEM_WB.IR: %x", MEM_WB.IR);
 	printf("\nMEM_WB.ALUOutput: %x", MEM_WB.ALUOutput);
@@ -1325,14 +1243,10 @@ void show_pipeline(){
 	printf("\nMEM_WB.MTLO: %d", MEM_WB.MTLO);
 	printf("\nMEM_WB.MULDIV: %d", MEM_WB.MULDIV);
 	printf("\nstalling: %d\n", stalling);
-<<<<<<< HEAD
   printf("\nCache Stalling: %d", cacheStalling);
 	printf("\nENABLE_FORWARDING: %d", ENABLE_FORWARDING);
   
   printf("\nInstruction Count: %d", INSTRUCTION_COUNT);
-=======
-	printf("\nENABLE_FORWARDING: %d", ENABLE_FORWARDING);
->>>>>>> 1989926dab189e91f96806526fe97ab76a612ede
 	
 }
 
