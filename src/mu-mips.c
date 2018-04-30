@@ -429,8 +429,18 @@ void MEM()
         printf("\nCACHE Memory Store");
         currentBlock->words[wordOffset] = MEM_WB.B; //update cache
         printf("\nplaced %x into cache (HIT_SW)", currentBlock->words[wordOffset]);
-        writeBuffer = *currentBlock; //put cache block into write buffer
-        printf("\nafter writeBuffer copy -> value = %x", writeBuffer.words[wordOffset]);
+        fflush(stdout);
+        
+        //put cache block into write buffer
+        writeBuffer.words[0] = currentBlock->words[0]; 
+        writeBuffer.words[1] = currentBlock->words[1];
+        writeBuffer.words[2] = currentBlock->words[2];
+        writeBuffer.words[3] = currentBlock->words[3];
+        printf("\nwordOffset: %x",wordOffset);
+        for(i = 0; i < 4; i++){
+          printf("\nwriteBuffer.words[%d] : %x",i,writeBuffer.words[i]);
+        }
+        fflush(stdout);
         writeBufferToMemory(blockAddress); //write write buffer to memory
       }
       
