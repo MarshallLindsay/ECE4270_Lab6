@@ -459,6 +459,7 @@ void MEM()
         L1Cache.blocks[blockIndex].words[2] = mem_read_32(blockAddress+0x8);
         L1Cache.blocks[blockIndex].words[3] = mem_read_32(blockAddress+0xC);
         L1Cache.blocks[blockIndex].valid = 1; //block is now valid
+        L1Cache.blocks[blockIndex].tag = currentTag;
         
         MEM_WB.LMD = L1Cache.blocks[blockIndex].words[wordOffset]; //return word to CPU
         printf("\nCACHE_MEMWB LMD: %x", MEM_WB.LMD);
@@ -472,6 +473,7 @@ void MEM()
         L1Cache.blocks[blockIndex].words[2] = mem_read_32(blockAddress+0x8);
         L1Cache.blocks[blockIndex].words[3] = mem_read_32(blockAddress+0xC);
         L1Cache.blocks[blockIndex].valid = 1; //block is now valid
+        L1Cache.blocks[blockIndex].tag = currentTag;
         L1Cache.blocks[blockIndex].words[wordOffset] = MEM_WB.B; //update new word in cache
         
         for(i = 0; i < 4; i++){
