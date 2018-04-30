@@ -3,6 +3,7 @@ LUI $v1 0x1001
 ADDIU $a0 $zero 0x0014
 ADDIU $a1 $a0 0x0001
 SW $a1 0x0000 $v1
+LUI $t0 0x5000
 LUI $a2 0x0010
 ADD $a3 $t0 $t0
 ADD $t1 $a3 $a3
