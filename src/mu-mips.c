@@ -406,7 +406,7 @@ void MEM()
     
     uint32_t currentTag = MEM_WB.ALUOutput & 0xFFFFF000;
     uint32_t byteOffset = MEM_WB.ALUOutput & 0x3;
-    uint32_t wordOffset = MEM_WB.ALUOutput & 0xC;
+    uint32_t wordOffset = (MEM_WB.ALUOutput & 0xC) >> 2;
     uint32_t blockIndex = MEM_WB.ALUOutput & 0xF0;
     uint32_t blockAddress = MEM_WB.ALUOutput & 0xFFFFFFFC;
     
