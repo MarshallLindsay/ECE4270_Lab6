@@ -502,7 +502,10 @@ void MEM()
 /************************************************************/
 void EX()
 {
-	
+	if(cacheStalling != 0){
+    return;
+  }
+  
 	uint64_t product, p1, p2;
 	EX_MEM = ID_EX;
 	memset(&ID_EX, 0, sizeof(ID_EX)); //Clear ID_EX
