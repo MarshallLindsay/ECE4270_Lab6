@@ -428,6 +428,7 @@ void MEM()
       } else if(MEM_WB.memory_reference_store){
         printf("\nCACHE Memory Store");
         currentBlock->words[wordOffset] = MEM_WB.B; //update cache
+        printf("\nplaced %x into cache (HIT_SW)", MEM_WB.B);
         writeBuffer = *currentBlock; //put cache block into write buffer
         writeBufferToMemory(blockAddress); //write write buffer to memory
       }
@@ -802,7 +803,7 @@ void EX()
 			case 0x28: //SB *******LOAD/STORE*********
 			case 0x29: //SH *******LOAD/STORE*********
 			case 0x2B: //SW *******LOAD/STORE*********
-        printf("\nEX_Store Word!");
+        //printf("\nEX_Store Word!");
 				EX_MEM.ALUOutput = EX_MEM.A + EX_MEM.imm;
 				EX_MEM.destination = 0;
 				EX_MEM.memory_reference_store = 1;
@@ -1309,4 +1310,5 @@ void writeBufferToMemory(uint32_t blockAddress){
   mem_write_32(blockAddress, combinedValue);
   
   printf("\nwriteBufferToMemory blockAddress: %x", blockAddress);
+  printf("\nwrote %x", combinedValue);
 }
