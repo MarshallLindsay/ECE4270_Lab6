@@ -1264,8 +1264,11 @@ int main(int argc, char *argv[]) {
 	}
 
 	strcpy(prog_file, argv[1]);
+  printf("\nAfter copy");
 	initialize();
+  printf("\nAfter initialize");
 	load_program();
+  printf("\nAfter loadProgram");
 	help();
 	while (1){
 		handle_command();
