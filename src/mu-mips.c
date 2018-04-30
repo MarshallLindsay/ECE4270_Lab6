@@ -283,7 +283,7 @@ void init_memory() {
 	for (i = 0; i < NUM_MEM_REGION; i++) {
 		uint32_t region_size = MEM_REGIONS[i].end - MEM_REGIONS[i].begin + 1;
 		MEM_REGIONS[i].mem = malloc(region_size);
-    if(MEM_REGIONS[i].mem == null){
+    if(MEM_REGIONS[i].mem == NULL){
       printf("\nMemory malloc failed!");
      }
 		memset(MEM_REGIONS[i].mem, 0, region_size);
@@ -388,6 +388,7 @@ void WB()
 /************************************************************/
 void MEM()
 {
+  int i;
   uint32_t currentTag = MEM_WB.ALUOutput & 0xFFFFF000;
   uint32_t byteOffset = MEM_WB.ALUOutput & 0x3;
   uint32_t wordOffset = MEM_WB.ALUOutput & 0xC;
@@ -442,7 +443,7 @@ void MEM()
   } else {
     //cache stalling
     
-    printf("\nCache Stalling!");
+    //printf("\nCache Stalling!");
     fflush(stdout);
     if(cacheStalling == 100){
       //end of cache stalling
@@ -474,12 +475,20 @@ void MEM()
         L1Cache.blocks[blockIndex].valid = 1; //block is now valid
         L1Cache.blocks[blockIndex].words[wordOffset] = MEM_WB.B; //update new word in cache
         
+        for(i = 0; i < 4; i++){
+          printf("\nValue at blockIndex %x: %x",blockIndex,L1Cache.blocks[blockIndex].words[i]);
+        }
+        
         //place updated cache block in write buffer
         writeBuffer.words[0] = L1Cache.blocks[blockIndex].words[0];
         writeBuffer.words[1] = L1Cache.blocks[blockIndex].words[1];
         writeBuffer.words[2] = L1Cache.blocks[blockIndex].words[2];
         writeBuffer.words[3] = L1Cache.blocks[blockIndex].words[3];
         writeBufferToMemory(blockAddress);
+        
+        for(i = 0; i < 4; i++){
+          printf("\nValue at writeBuffer %x: %x",i,L1Cache.blocks[blockIndex].words[i]);
+        }
       }
     } else {
       cacheStalling++;
@@ -776,13 +785,13 @@ void EX()
 				EX_MEM.register_immediate = 1;
 				break;
 			case 0x20: //LB *******LOAD/STORE*********
-        printf("\nLB");
+        //printf("\nLB");
 			case 0x21: //LH *******LOAD/STORE*********
 			case 0x23: //LW *******LOAD/STORE*********
 				EX_MEM.ALUOutput = EX_MEM.A + EX_MEM.imm;
-				printf("\nEXMEM A: %x   EXMEM imm: %x   EXMEM ALUOUT: %x", EX_MEM.A, EX_MEM.imm, EX_MEM.ALUOutput);
+				//printf("\nEXMEM A: %x   EXMEM imm: %x   EXMEM ALUOUT: %x", EX_MEM.A, EX_MEM.imm, EX_MEM.ALUOutput);
 				EX_MEM.destination = EX_MEM.registerRt;
-				printf("\nEX_MEM DEST : %x", EX_MEM.destination);
+				//printf("\nEX_MEM DEST : %x", EX_MEM.destination);
 				EX_MEM.memory_reference_load = 1;
 				break;
 			case 0x28: //SB *******LOAD/STORE*********
