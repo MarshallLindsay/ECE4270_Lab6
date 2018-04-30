@@ -341,7 +341,6 @@ void WB()
 {
   //if cache is stalling, skip
   if(cacheStalling != 0){
-    printf("skipping WB");
     return;
   }
   
@@ -463,7 +462,7 @@ void MEM()
       if(MEM_WB.memory_reference_load){
         printf("\nCACHE Memory Load");
         MEM_WB.LMD = L1Cache.blocks[blockIndex].words[wordOffset];
-        printf("\nCACHE_MEMWB LMD: %x", MEM_WB.LMD);
+        //printf("\nCACHE_MEMWB LMD: %x", MEM_WB.LMD);
       } else if(MEM_WB.memory_reference_store){
         printf("\nCACHE Memory Store");
         L1Cache.blocks[blockIndex].words[wordOffset] = MEM_WB.B; //update cache
@@ -509,7 +508,7 @@ void MEM()
         L1Cache.blocks[blockIndex].tag = currentTag;
         
         MEM_WB.LMD = L1Cache.blocks[blockIndex].words[wordOffset]; //return word to CPU
-        printf("\nCACHE_MEMWB LMD: %x", MEM_WB.LMD);
+        //printf("\nCACHE_MEMWB LMD: %x", MEM_WB.LMD);
 
       } else if(MEM_WB.memory_reference_store){
         printf("\nCACHE Memory Store");
@@ -525,6 +524,7 @@ void MEM()
         L1Cache.blocks[blockIndex].tag = currentTag;
         
         L1Cache.blocks[blockIndex].words[wordOffset] = MEM_WB.B; //update new word in cache
+        printf("\njust put %x into cache block %x", MEM_WB.B, blockIndex);
         
         for(i = 0; i < 4; i++){
           printf("\nValue at blockIndex %x: %x",blockIndex,L1Cache.blocks[blockIndex].words[i]);
