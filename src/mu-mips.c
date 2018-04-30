@@ -467,7 +467,7 @@ void MEM()
       } else if(MEM_WB.memory_reference_store){
         printf("\nCACHE Memory Store");
         L1Cache.blocks[blockIndex].words[wordOffset] = MEM_WB.B; //update cache
-        printf("\nplaced %x into cache (HIT_SW)", currentBlock->words[wordOffset]);
+        
         fflush(stdout);
         
         //put cache block into write buffer
@@ -1352,6 +1352,4 @@ void writeBufferToMemory(uint32_t blockAddress){
   mem_write_32((blockAddress+0x2), writeBuffer.words[2]);
   mem_write_32((blockAddress+0x3), writeBuffer.words[3]);
   
-  printf("\nwriteBufferToMemory blockAddress: %x", blockAddress);
-  printf("\nwrote %x", combinedValue);
 }
