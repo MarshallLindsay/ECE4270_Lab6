@@ -404,47 +404,80 @@ void MEM()
       return;
     }
     
-    uint32_t currentTag = MEM_WB.ALUOutput & 0xFFFFF000;
-    uint32_t byteOffset = MEM_WB.ALUOutput & 0x3;
-    uint32_t wordOffset = (MEM_WB.ALUOutput & 0xC) >> 2;
-    uint32_t blockIndex = (MEM_WB.ALUOutput & 0xF0) >> 4;
+    uint32_t currentTag = (MEM_WB.ALUOutput & 0xFFFFFFC0) >> 6;
+    //uint32_t byteOffset = MEM_WB.ALUOutput & 0x3;
+    uint32_t wordOffset = (MEM_WB.ALUOutput & 0x3);
+    uint32_t blockIndex = (MEM_WB.ALUOutput & 0x3C) >> 2;
     uint32_t blockAddress = MEM_WB.ALUOutput & 0xFFFFFFFC;
+    //CacheBlock* currentBlock;
+    //currentBlock = &L1Cache.blocks[blockIndex];
+    //HIT MISS LOGIC//
+    //Look in cache at block[blockIndex]
+      //compare tags
+      //check valid bit
+        //hit/miss
+    
+    //HIT//
+      //Load
+        //Give cpu value cache[blockIndex].words[wordOffset]
+      //Store
+        //Update the value at cache[blockIndex].words[wordOffset]
+        //Place cache[blockIndex] into writeBuffer
+        //Write writeBuffer to memory (need four writes)
     
     
-    printf("\nCACHE is not stalling!");
-    CacheBlock* currentBlock;
-    currentBlock = &L1Cache.blocks[blockIndex];
+    //MISS//
+      //Stall 100 cycles
+      //Load
+        //Read block from memory
+          //Read four times from memory (address = blockAddress)
+          //Place values into cache[blockIndex].words[0,1,2,3]
+          //Set cache[blockIndex].valid bit
+          //Set cache[blockIndex].tag
+          //return value to cpu
+      //Store
+        //Read block from memory
+          //Read four times from memory (address = blockAddress)
+          //Place values into cache[blockIndex].words[0,1,2,3]
+          //Set cache[blockIndex].valid bit
+          //Set cache[blockIndex].tag
+        //Update the value at cache[blockIndex].words[wordOffset]
+        //Place cache[blockIndex] into writeBuffer
+        //Write writeBuffer to memory (need four writes)
+    
+  
+   
+    /*
     printf("\nAfter block set");
     printf("\ncurrentBlock.tag : %x ", (*currentBlock).tag);
     printf("\ncurrentBlock.valid: %x", (*currentBlock).valid);
     printf("\ncurrentTag: %x", currentTag);
-    if(((*currentBlock).tag == currentTag) && ((*currentBlock).valid == 1)){
+    */
+    
+    //HIT MISS LOGIC//
+    if((L1Cache.blocks[blockIndex].tag == currentTag) && (L1Cache.blocks[blockIndex].valid == 1)){
       printf("\nCACHE Hit!");
       //cache hit, so load/store from cache
       cache_hits++;
+      
       if(MEM_WB.memory_reference_load){
         printf("\nCACHE Memory Load");
-       MEM_WB.LMD = currentBlock->words[wordOffset];
-      printf("\nCACHE_MEMWB LMD: %x", MEM_WB.LMD);
+        MEM_WB.LMD = L1Cache.blocks[blockIndex].words[wordOffset];
+        printf("\nCACHE_MEMWB LMD: %x", MEM_WB.LMD);
       } else if(MEM_WB.memory_reference_store){
         printf("\nCACHE Memory Store");
-        currentBlock->words[wordOffset] = MEM_WB.B; //update cache
+        L1Cache.blocks[blockIndex].words[wordOffset] = MEM_WB.B; //update cache
         printf("\nplaced %x into cache (HIT_SW)", currentBlock->words[wordOffset]);
         fflush(stdout);
         
         //put cache block into write buffer
-        writeBuffer.words[0] = currentBlock->words[0]; 
-        writeBuffer.words[1] = currentBlock->words[1];
-        writeBuffer.words[2] = currentBlock->words[2];
-        writeBuffer.words[3] = currentBlock->words[3];
-        printf("\nwordOffset: %x",wordOffset);
-        for(i = 0; i < 4; i++){
-          printf("\nwriteBuffer.words[%d] : %x",i,writeBuffer.words[i]);
-        }
-        fflush(stdout);
+        writeBuffer.words[0] = L1Cache.blocks[blockIndex].words[0]; 
+        writeBuffer.words[1] = L1Cache.blocks[blockIndex].words[1];
+        writeBuffer.words[2] = L1Cache.blocks[blockIndex].words[2];
+        writeBuffer.words[3] = L1Cache.blocks[blockIndex].words[3];
+        
         writeBufferToMemory(blockAddress); //write write buffer to memory
       }
-      
     } else {
       printf("\nCACHE Miss!");
       fflush(stdout);
@@ -454,16 +487,15 @@ void MEM()
     }
     
   } else {
-    //cache stalling
-    
-    //printf("\nCache Stalling!");
-    fflush(stdout);
+    //MISS//
+ 
     if(cacheStalling == 100){
       //end of cache stalling
-      printf("\nEnd of stalling! memLoad: %d   memStore: %d", MEM_WB.memory_reference_load, MEM_WB.memory_reference_store);
-      fflush(stdout);
+      //printf("\nEnd of stalling! memLoad: %d   memStore: %d", MEM_WB.memory_reference_load, MEM_WB.memory_reference_store);
+      //fflush(stdout);
       cacheStalling = 0;
       stalling = 0;
+      
       if(MEM_WB.memory_reference_load){
         printf("\nCACHE Memory Load");
         fflush(stdout);
@@ -472,6 +504,7 @@ void MEM()
         L1Cache.blocks[blockIndex].words[1] = mem_read_32(blockAddress+0x1);
         L1Cache.blocks[blockIndex].words[2] = mem_read_32(blockAddress+0x2);
         L1Cache.blocks[blockIndex].words[3] = mem_read_32(blockAddress+0x3);
+        
         L1Cache.blocks[blockIndex].valid = 1; //block is now valid
         L1Cache.blocks[blockIndex].tag = currentTag;
         
@@ -479,13 +512,15 @@ void MEM()
         printf("\nCACHE_MEMWB LMD: %x", MEM_WB.LMD);
 
       } else if(MEM_WB.memory_reference_store){
-         printf("\nCACHE Memory Store");
+        printf("\nCACHE Memory Store");
         fflush(stdout);
+        
          //read all words in block and place each into cache
         L1Cache.blocks[blockIndex].words[0] = mem_read_32(blockAddress);
         L1Cache.blocks[blockIndex].words[1] = mem_read_32(blockAddress+0x1);
         L1Cache.blocks[blockIndex].words[2] = mem_read_32(blockAddress+0x2);
         L1Cache.blocks[blockIndex].words[3] = mem_read_32(blockAddress+0x3);
+        
         L1Cache.blocks[blockIndex].valid = 1; //block is now valid
         L1Cache.blocks[blockIndex].tag = currentTag;
         
@@ -502,9 +537,6 @@ void MEM()
         writeBuffer.words[3] = L1Cache.blocks[blockIndex].words[3];
         writeBufferToMemory(blockAddress);
         
-        for(i = 0; i < 4; i++){
-          printf("\nValue at writeBuffer %x: %x",i,L1Cache.blocks[blockIndex].words[i]);
-        }
       }
     } else {
       cacheStalling++;
@@ -1315,12 +1347,10 @@ void flush(void){
 
 void writeBufferToMemory(uint32_t blockAddress){
   int i;
-  uint32_t combinedValue;
-  combinedValue = writeBuffer.words[0];
-  combinedValue |= (writeBuffer.words[1] << 8);
-  combinedValue |= (writeBuffer.words[2] << 16);
-  combinedValue |= (writeBuffer.words[3] << 24);
-  mem_write_32(blockAddress, combinedValue);
+  mem_write_32(blockAddress, writeBuffer.words[0]);
+  mem_write_32((blockAddress+0x1), writeBuffer.words[1]);
+  mem_write_32((blockAddress+0x2), writeBuffer.words[2]);
+  mem_write_32((blockAddress+0x3), writeBuffer.words[3]);
   
   printf("\nwriteBufferToMemory blockAddress: %x", blockAddress);
   printf("\nwrote %x", combinedValue);
