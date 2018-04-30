@@ -403,7 +403,6 @@ void MEM()
       return;
     }
     
-    
     uint32_t currentTag = MEM_WB.ALUOutput & 0xFFFFF000;
     uint32_t byteOffset = MEM_WB.ALUOutput & 0x3;
     uint32_t wordOffset = MEM_WB.ALUOutput & 0xC;
@@ -414,9 +413,9 @@ void MEM()
     CacheBlock* currentBlock;
     currentBlock = &L1Cache.blocks[blockIndex];
     printf("\nAfter block set");
-    printf("\ncurrentBlock.tag : %d ", (*currentBlock).tag);
-    printf("\ncurrentBlock.valid: %d", (*currentBlock).valid);
-    printf("\ncurrentTag: %d", currentTag);
+    printf("\ncurrentBlock.tag : %x ", (*currentBlock).tag);
+    printf("\ncurrentBlock.valid: %x", (*currentBlock).valid);
+    printf("\ncurrentTag: %x", currentTag);
     if(((*currentBlock).tag == currentTag) && ((*currentBlock).valid == 1)){
       printf("\nCACHE Hit!");
       //cache hit, so load/store from cache
@@ -1295,8 +1294,13 @@ void flush(void){
 }
 
 void writeBufferToMemory(uint32_t blockAddress){
-  mem_write_32(blockAddress, writeBuffer.words[0]);
-  mem_write_32(blockAddress, writeBuffer.words[1]);
-  mem_write_32(blockAddress, writeBuffer.words[2]);
-  mem_write_32(blockAddress, writeBuffer.words[3]);
+  int i;
+  uint32_t combinedValue;
+  combinedValue = writeBuffer.words[0];
+  combinedValue |= (writeBuffer.words[1] << 8);
+  combinedValue |= (writeBuffer.words[2] << 16);
+  combinedValue |= (writeBuffer.words[3] << 24);
+  mem_write_32(blockAddress, combinedValue);
+  
+  printf("\nwriteBufferToMemory blockAddress: %x", blockAddress);
 }
