@@ -341,6 +341,7 @@ void WB()
 {
   //if cache is stalling, skip
   if(cacheStalling != 0){
+    printf("skipping WB");
     return;
   }
   
