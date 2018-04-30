@@ -389,11 +389,18 @@ void WB()
 void MEM()
 {
   int i;
-  uint32_t currentTag = MEM_WB.ALUOutput & 0xFFFFF000;
+  /*uint32_t currentTag = MEM_WB.ALUOutput & 0xFFFFF000;
   uint32_t byteOffset = MEM_WB.ALUOutput & 0x3;
   uint32_t wordOffset = MEM_WB.ALUOutput & 0xC;
   uint32_t blockIndex = MEM_WB.ALUOutput & 0xF0;
+  uint32_t blockAddress = MEM_WB.ALUOutput & 0xFFFFFFFC;*/
+  
+  uint32_t currentTag = (MEM_WB.ALUOutput & 0xFFFFFFC0) >> 6;
+  //uint32_t byteOffset = MEM_WB.ALUOutput & 0x3;
+  uint32_t wordOffset = (MEM_WB.ALUOutput & 0x3);
+  uint32_t blockIndex = (MEM_WB.ALUOutput & 0x3C) >> 2;
   uint32_t blockAddress = MEM_WB.ALUOutput & 0xFFFFFFFC;
+  
   if(cacheStalling==0){
     //not stalling
     MEM_WB = EX_MEM;
