@@ -283,6 +283,9 @@ void init_memory() {
 	for (i = 0; i < NUM_MEM_REGION; i++) {
 		uint32_t region_size = MEM_REGIONS[i].end - MEM_REGIONS[i].begin + 1;
 		MEM_REGIONS[i].mem = malloc(region_size);
+    if(MEM_REGIONS[i].mem == null){
+      printf("\nMemory malloc failed!");
+     }
 		memset(MEM_REGIONS[i].mem, 0, region_size);
 	}
 }
