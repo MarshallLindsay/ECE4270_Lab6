@@ -109,7 +109,7 @@ void runAll() {
 	while (RUN_FLAG){
 		cycle();
 	}
-	printf("Simulation Finished.\n\n");
+	printf("\nSimulation Finished.\n\n");
 }
 
 /***************************************************************/ 
@@ -531,21 +531,7 @@ void MEM()
         L1Cache.blocks[blockIndex].tag = currentTag;
         
         L1Cache.blocks[blockIndex].words[wordOffset] = MEM_WB.B; //update new word in cache
-        printf("\njust put %x into cache block %x at word index %x", MEM_WB.B, blockIndex, wordOffset);
-        
-        for(i = 0; i < 4; i++){
-          printf("\nValue at blockIndex %x word %x: %x",blockIndex,i,L1Cache.blocks[blockIndex].words[i]);
-        }
-        
-        //place updated cache block in write buffer
-        writeBuffer.words[0] = L1Cache.blocks[blockIndex].words[0];
-        writeBuffer.words[1] = L1Cache.blocks[blockIndex].words[1];
-        writeBuffer.words[2] = L1Cache.blocks[blockIndex].words[2];
-        writeBuffer.words[3] = L1Cache.blocks[blockIndex].words[3];
-        writeBufferToMemory(blockAddress);
-        
-      }
-    } else {
+        printf("\njust put %x into cache block %x at word index %x", MEM_WB.B, blockIndex, wordOffset); 
       cacheStalling++;
     }
   }
