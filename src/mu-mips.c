@@ -407,8 +407,9 @@ void MEM()
     uint32_t currentTag = MEM_WB.ALUOutput & 0xFFFFF000;
     uint32_t byteOffset = MEM_WB.ALUOutput & 0x3;
     uint32_t wordOffset = (MEM_WB.ALUOutput & 0xC) >> 2;
-    uint32_t blockIndex = MEM_WB.ALUOutput & 0xF0;
+    uint32_t blockIndex = (MEM_WB.ALUOutput & 0xF0) >> 4;
     uint32_t blockAddress = MEM_WB.ALUOutput & 0xFFFFFFFC;
+    
     
     printf("\nCACHE is not stalling!");
     CacheBlock* currentBlock;
@@ -468,9 +469,9 @@ void MEM()
         fflush(stdout);
         //read all words in block and place each into cache
         L1Cache.blocks[blockIndex].words[0] = mem_read_32(blockAddress);
-        L1Cache.blocks[blockIndex].words[1] = mem_read_32(blockAddress+0x4);
-        L1Cache.blocks[blockIndex].words[2] = mem_read_32(blockAddress+0x8);
-        L1Cache.blocks[blockIndex].words[3] = mem_read_32(blockAddress+0xC);
+        L1Cache.blocks[blockIndex].words[1] = mem_read_32(blockAddress+0x1);
+        L1Cache.blocks[blockIndex].words[2] = mem_read_32(blockAddress+0x2);
+        L1Cache.blocks[blockIndex].words[3] = mem_read_32(blockAddress+0x3);
         L1Cache.blocks[blockIndex].valid = 1; //block is now valid
         L1Cache.blocks[blockIndex].tag = currentTag;
         
@@ -482,11 +483,12 @@ void MEM()
         fflush(stdout);
          //read all words in block and place each into cache
         L1Cache.blocks[blockIndex].words[0] = mem_read_32(blockAddress);
-        L1Cache.blocks[blockIndex].words[1] = mem_read_32(blockAddress+0x4);
-        L1Cache.blocks[blockIndex].words[2] = mem_read_32(blockAddress+0x8);
-        L1Cache.blocks[blockIndex].words[3] = mem_read_32(blockAddress+0xC);
+        L1Cache.blocks[blockIndex].words[1] = mem_read_32(blockAddress+0x1);
+        L1Cache.blocks[blockIndex].words[2] = mem_read_32(blockAddress+0x2);
+        L1Cache.blocks[blockIndex].words[3] = mem_read_32(blockAddress+0x3);
         L1Cache.blocks[blockIndex].valid = 1; //block is now valid
         L1Cache.blocks[blockIndex].tag = currentTag;
+        
         L1Cache.blocks[blockIndex].words[wordOffset] = MEM_WB.B; //update new word in cache
         
         for(i = 0; i < 4; i++){
